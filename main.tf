@@ -6,7 +6,7 @@ data "aws_subnet" "subnets" {
 
 # Elasticache subnet group
 resource "aws_elasticache_subnet_group" "elasticache" {
-  name       = "${var.base_name}-ec-subnet-group"
+  name       = "${local.service_name}-ec-subnet-group"
   subnet_ids = var.vpc_config.private_subnets
 }
 
@@ -44,6 +44,6 @@ resource "aws_elasticache_replication_group" "elasticache" {
   transit_encryption_enabled = true
 
   tags = merge({
-    Name = "${var.base_name}-ec-cluster"
-  }, var.tags)
+    Name = "${local.service_name}-ec-cluster"
+  }, local.tags)
 }

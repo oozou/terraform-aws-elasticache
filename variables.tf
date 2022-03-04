@@ -1,7 +1,32 @@
-variable "base_name" {
-  description = "Base name used in naming resources created in this component"
+/* -------------------------------------------------------------------------- */
+/*                                   Generic                                  */
+/* -------------------------------------------------------------------------- */
+
+variable "name" {
+  description = "Name of the ECS cluster to create"
   type        = string
 }
+
+variable "environment" {
+  description = "Environment Variable used as a prefix"
+  type        = string
+}
+
+variable "prefix" {
+  description = "The prefix name of customer to be displayed in AWS console and resource"
+  type        = string
+}
+
+
+/* -------------------------------------------------------------------------- */
+/*                                 ElastiCache                                */
+/* -------------------------------------------------------------------------- */
+
+
+# variable "base_name" {
+#   description = "Base name used in naming resources created in this component"
+#   type        = string
+# }
 
 variable "vpc_config" {
   description = "VPC ID and private subnets for ElastiCache cluster"
@@ -49,7 +74,7 @@ variable "multi_az_enabled" {
   type        = bool
 }
 
-variable "tags" {
+variable "custom_tags" {
   description = "Custom tags which can be passed on to the AWS resources. They should be key value pairs having distinct keys."
   type        = map(string)
   default     = {}
