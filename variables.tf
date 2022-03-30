@@ -17,7 +17,11 @@ variable "prefix" {
   type        = string
 }
 
-
+variable "tags" {
+  description = "Custom tags which can be passed on to the AWS resources. They should be key value pairs having distinct keys."
+  type        = map(string)
+  default     = {}
+}
 /* -------------------------------------------------------------------------- */
 /*                                 ElastiCache                                */
 /* -------------------------------------------------------------------------- */
@@ -72,10 +76,4 @@ variable "maintenance_window" {
 variable "multi_az_enabled" {
   description = "Specifies whether to enable Multi-AZ Support for the replication group"
   type        = bool
-}
-
-variable "custom_tags" {
-  description = "Custom tags which can be passed on to the AWS resources. They should be key value pairs having distinct keys."
-  type        = map(string)
-  default     = {}
 }

@@ -7,7 +7,7 @@ locals {
       "Environment" = local.environment,
       "Terraform"   = "true"
     },
-    var.custom_tags
+    var.tags
   )
 
   replication_group_id = substr(
@@ -19,5 +19,4 @@ locals {
   automatic_failover_enabled = var.redis_cluster_config.node_count > 1
   # To enable, automatic_failover_enabled must also be enabled
   multi_az_enabled = var.multi_az_enabled == true && local.automatic_failover_enabled == true
-
 }
