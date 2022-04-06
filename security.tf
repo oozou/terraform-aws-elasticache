@@ -44,29 +44,16 @@ resource "aws_security_group_rule" "egress" {
 }
 
 
-# Additional Security group rule for incoming and outgoing client
-resource "aws_security_group_rule" "additional_client_ingress" {
-  count = length(var.additional_client_security_group_ingress_rules)
+# Additional Security group rule for incoming and outgoing
+resource "aws_security_group_rule" "additional_cluster_ingress" {
+  count = length(var.additional_cluster_security_group_ingress_rules)
 
   type                     = "ingress"
-  from_port                = var.additional_client_security_group_ingress_rules[count.index].from_port
-  to_port                  = var.additional_client_security_group_ingress_rules[count.index].to_port
-  protocol                 = var.additional_client_security_group_ingress_rules[count.index].protocol
-  cidr_blocks              = length(var.additional_client_security_group_ingress_rules[count.index].source_security_group_id) > 0 ? null : var.additional_client_security_group_ingress_rules[count.index].cidr_blocks
-  source_security_group_id = length(var.additional_client_security_group_ingress_rules[count.index].cidr_blocks) > 0 ? null : var.additional_client_security_group_ingress_rules[count.index].source_security_group_id
-  security_group_id        = aws_security_group.client.id
-  description              = var.additional_client_security_group_ingress_rules[count.index].description
-}
-
-resource "aws_security_group_rule" "additional_client_egress" {
-  count = length(var.additional_client_security_group_egress_rules)
-
-  type                     = "egress"
-  from_port                = var.additional_client_security_group_egress_rules[count.index].from_port
-  to_port                  = var.additional_client_security_group_egress_rules[count.index].to_port
-  protocol                 = var.additional_client_security_group_egress_rules[count.index].protocol
-  cidr_blocks              = length(var.additional_client_security_group_egress_rules[count.index].source_security_group_id) > 0 ? null : var.additional_client_security_group_egress_rules[count.index].cidr_blocks
-  source_security_group_id = length(var.additional_client_security_group_egress_rules[count.index].cidr_blocks) > 0 ? null : var.additional_client_security_group_egress_rules[count.index].source_security_group_id
-  security_group_id        = aws_security_group.client.id
-  description              = var.additional_client_security_group_egress_rules[count.index].description
+  from_port                = var.additional_cluster_security_group_ingress_rules[count.index].from_port
+  to_port                  = var.additional_cluster_security_group_ingress_rules[count.index].to_port
+  protocol                 = var.additional_cluster_security_group_ingress_rules[count.index].protocol
+  cidr_blocks              = length(var.additional_cluster_security_group_ingress_rules[count.index].source_security_group_id) > 0 ? null : var.additional_cluster_security_group_ingress_rules[count.index].cidr_blocks
+  source_security_group_id = length(var.additional_cluster_security_group_ingress_rules[count.index].cidr_blocks) > 0 ? null : var.additional_cluster_security_group_ingress_rules[count.index].source_security_group_id
+  security_group_id        = local.rds_security_group_id
+  description              = var.additional_cluster_security_group_ingress_rules[count.index].description
 }
