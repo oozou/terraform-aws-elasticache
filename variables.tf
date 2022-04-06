@@ -78,7 +78,7 @@ variable "multi_az_enabled" {
   type        = bool
 }
 
-variable "additional_client_security_group_ingress_rules" {
+variable "additional_cluster_security_group_ingress_rules" {
   type = list(object({
     from_port                = number
     to_port                  = number
@@ -87,6 +87,6 @@ variable "additional_client_security_group_ingress_rules" {
     source_security_group_id = string
     description              = string
   }))
-  description = "Additional ingress rule for client security group."
+  description = "Additional ingress rule for cluster security group."
   default     = []
 }

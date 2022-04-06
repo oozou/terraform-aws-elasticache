@@ -54,6 +54,6 @@ resource "aws_security_group_rule" "additional_cluster_ingress" {
   protocol                 = var.additional_cluster_security_group_ingress_rules[count.index].protocol
   cidr_blocks              = length(var.additional_cluster_security_group_ingress_rules[count.index].source_security_group_id) > 0 ? null : var.additional_cluster_security_group_ingress_rules[count.index].cidr_blocks
   source_security_group_id = length(var.additional_cluster_security_group_ingress_rules[count.index].cidr_blocks) > 0 ? null : var.additional_cluster_security_group_ingress_rules[count.index].source_security_group_id
-  security_group_id        = local.rds_security_group_id
+  security_group_id        = aws_security_group.elasticache.id
   description              = var.additional_cluster_security_group_ingress_rules[count.index].description
 }
