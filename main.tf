@@ -14,7 +14,7 @@ resource "aws_elasticache_subnet_group" "elasticache" {
 resource "aws_elasticache_replication_group" "elasticache" {
   # Group ID can only be max 20 chars
   replication_group_id          = local.replication_group_id
-  replication_group_description = "AWS ElastiCache cluster with Redis engine and Multi-AZ."
+  description = "AWS ElastiCache cluster with Redis engine and Multi-AZ."
 
   # Redis configuration
   node_type      = var.redis_cluster_config.instance_type
@@ -28,7 +28,7 @@ resource "aws_elasticache_replication_group" "elasticache" {
   security_group_ids = [aws_security_group.elasticache.id]
 
   # HA
-  number_cache_clusters      = var.redis_cluster_config.node_count
+  num_cache_clusters         = var.redis_cluster_config.node_count
   automatic_failover_enabled = local.automatic_failover_enabled
   multi_az_enabled           = local.multi_az_enabled
   auto_minor_version_upgrade = true
