@@ -13,8 +13,8 @@ resource "aws_elasticache_subnet_group" "elasticache" {
 # Replication Group - ElastiCache Redis cluster
 resource "aws_elasticache_replication_group" "elasticache" {
   # Group ID can only be max 20 chars
-  replication_group_id          = local.replication_group_id
-  description = "AWS ElastiCache cluster with Redis engine and Multi-AZ."
+  replication_group_id = local.replication_group_id
+  description          = "AWS ElastiCache cluster with Redis engine and Multi-AZ."
 
   # Redis configuration
   node_type      = var.redis_cluster_config.instance_type
