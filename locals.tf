@@ -1,6 +1,6 @@
 locals {
-  environment          = var.environment
-  replication_group_id = "${var.prefix}-${var.environment}-${var.name}-redis"
+  environment  = var.environment
+  service_name = "${var.prefix}-${var.environment}-${var.name}"
 
   tags = merge(
     {
