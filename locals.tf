@@ -1,6 +1,6 @@
 locals {
-  environment  = var.environment
-  service_name = "${var.prefix}-${var.environment}-${var.name}"
+  environment          = var.environment
+  replication_group_id = "${var.prefix}-${var.environment}-${var.name}-redis"
 
   tags = merge(
     {
@@ -8,12 +8,6 @@ locals {
       "Terraform"   = "true"
     },
     var.tags
-  )
-
-  replication_group_id = substr(
-    "${local.service_name}-ec-cluster",
-    0,
-    min(20, length("${local.service_name}-ec-cluster")),
   )
   # To enable, number_cache_clusters greater than 1
   automatic_failover_enabled = var.redis_cluster_config.node_count > 1
