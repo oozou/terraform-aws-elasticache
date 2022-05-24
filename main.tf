@@ -6,14 +6,14 @@ data "aws_subnet" "subnets" {
 
 # Elasticache subnet group
 resource "aws_elasticache_subnet_group" "elasticache" {
-  name       = "${local.service_name}-ec-subnet-group"
+  name       = "${local.service_name}-ec-sngroup"
   subnet_ids = var.vpc_config.private_subnets
 }
 
 # Replication Group - ElastiCache Redis cluster
 resource "aws_elasticache_replication_group" "elasticache" {
   # Group ID can only be max 20 chars
-  replication_group_id = local.replication_group_id
+  replication_group_id = "${local.service_name}-ec"
   description          = "AWS ElastiCache cluster with Redis engine and Multi-AZ."
 
   # Redis configuration
@@ -44,6 +44,6 @@ resource "aws_elasticache_replication_group" "elasticache" {
   transit_encryption_enabled = true
 
   tags = merge({
-    Name = "${local.service_name}-ec-cluster"
+    Name = "${local.service_name}-ec"
   }, local.tags)
 }
