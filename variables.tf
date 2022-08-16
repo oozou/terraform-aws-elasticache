@@ -26,12 +26,6 @@ variable "tags" {
 /*                                 ElastiCache                                */
 /* -------------------------------------------------------------------------- */
 
-
-# variable "base_name" {
-#   description = "Base name used in naming resources created in this component"
-#   type        = string
-# }
-
 variable "vpc_config" {
   description = "VPC ID and private subnets for ElastiCache cluster"
   type = object({
