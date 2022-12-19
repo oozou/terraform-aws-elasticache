@@ -41,4 +41,15 @@ module "redis" {
   tags = var.custom_tags
 
   is_enable_default_alarms = true
+
+custom_elasticache_alarms_configure = {
+  cpu_utilization_too_high = {
+    metric_name         = "EngineCPUUtilization"
+    statistic           = "Average"
+    comparison_operator = ">="
+    threshold           = "85"
+    period              = "300"
+    evaluation_periods  = "1"
+  }
+}
 }
