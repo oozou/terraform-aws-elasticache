@@ -39,4 +39,6 @@ module "redis" {
   }
 
   tags = var.custom_tags
+
+  is_enable_default_alarms = true
 }
