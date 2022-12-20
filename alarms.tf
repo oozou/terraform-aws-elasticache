@@ -7,7 +7,7 @@ module "custom_elasticache_alarms" {
 
   prefix      = var.prefix
   environment = var.environment
-  name        = format("%s-%s-alarm", local.identifier, each.key)
+  name        = format("%s-%s-alarm", local.service_name, each.key)
 
   alarm_description = format(
     "%s's %s %s %s in period %ss with %s datapoint",
@@ -28,7 +28,7 @@ module "custom_elasticache_alarms" {
   threshold           = lookup(each.value, "threshold", null)
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.id
+    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id #tolist(aws_elasticache_replication_group.elasticache.member_clusters)[0]
   }
 
   alarm_actions = lookup(each.value, "alarm_actions", null)
@@ -40,7 +40,7 @@ module "custom_elasticache_alarms" {
 
 resource "aws_cloudwatch_metric_alarm" "redis_cpu_alarm" {
   count = var.is_enable_default_alarms ? 1 : 0
-  alarm_name          = format("%s-%s-alarm", local.identifier, "redis_high_CPU")
+  alarm_name          = format("%s-%s-alarm", local.service_name, "redis_high_CPU")
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
   metric_name         = "CPUUtilization"
@@ -53,45 +53,28 @@ resource "aws_cloudwatch_metric_alarm" "redis_cpu_alarm" {
   ok_actions          = var.default_ok_actions
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.id
+    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id #tolist(aws_elasticache_replication_group.elasticache.member_clusters)[0]
   }
+  depends_on = [aws_elasticache_replication_group.elasticache]
 }
 
 resource "aws_cloudwatch_metric_alarm" "redis_memory_alarm" {
   count = var.is_enable_default_alarms ? 1 : 0
-  alarm_name          = format("%s-%s-alarm", local.identifier, "redis_low_free_memory")
-  comparison_operator = "LessThanThreshold"
+  alarm_name          = format("%s-%s-alarm", local.service_name, "redis_high_memory")
+  comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
-  metric_name         = "FreeableMemory"
-  namespace           = "AWS/RDS"
+  metric_name         = "DatabaseMemoryUsagePercentage"
+  namespace           = "AWS/ElastiCache"
   period              = "600"
   statistic           = "Average"
-  threshold           = "20"
-  alarm_description   = "This alarm will trigger if the Redis cluster's freeable memory is too low"
+  threshold           = "80"
+  alarm_description   = "This alarm will trigger if the Redis cluster's memory usage is too high"
   alarm_actions       = var.default_alarm_actions
   ok_actions          = var.default_ok_actions
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.id
+    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id #tolist(aws_elasticache_replication_group.elasticache.member_clusters)[0]
   }
-}
-
-resource "aws_cloudwatch_metric_alarm" "redis_health_alarm" {
-  count = var.is_enable_default_alarms ? 1 : 0
-  alarm_name          =  format("%s-%s-alarm", local.identifier, "redis_health")
-  comparison_operator = "NotEqualToThreshold"
-  evaluation_periods  = "1"
-  metric_name         = "CacheClusterStatus"
-  namespace           = "AWS/ElastiCache"
-  period              = "60"
-  statistic           = "Minimum"
-  threshold           = "available"
-  alarm_description   = "This alarm will trigger if the Redis cluster is not healthy"
-  alarm_actions       = var.default_alarm_actions
-  ok_actions          = var.default_ok_actions
-
-  dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.id
-  }
+  depends_on = [aws_elasticache_replication_group.elasticache]
 }
 
