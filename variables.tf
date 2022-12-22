@@ -84,3 +84,45 @@ variable "additional_cluster_security_group_ingress_rules" {
   description = "Additional ingress rule for cluster security group."
   default     = []
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                  alarms                                    */
+/* -------------------------------------------------------------------------- */
+
+variable "is_enable_default_alarms" {
+  description = "if enable the default alarms"
+  type        = bool
+  default     = false
+}
+
+variable "default_alarm_actions" {
+  description = "The list of actions to execute when this alarm transitions into an ALARM state from any other state. Each action is specified as an Amazon Resource Name (ARN)."
+  type        = list(string)
+  default     = []
+}
+
+variable "default_ok_actions" {
+  description = "The list of actions to execute when this alarm transitions into an OK state from any other state. Each action is specified as an Amazon Resource Name (ARN)."
+  type        = list(string)
+  default     = []
+}
+
+
+variable "custom_elasticache_alarms_configure" {
+  description = <<EOF
+    custom_elasticache_alarms_configure = {
+      cpu_utilization_too_high = {
+        metric_name         = "EngineCPUUtilization"
+        statistic           = "Average"
+        comparison_operator = ">="
+        threshold           = "85"
+        period              = "300"
+        evaluation_periods  = "1"
+        alarm_actions       = [sns_topic_arn]
+        ok_actions       = [sns_topic_arn]
+      }
+    }
+  EOF
+  type        = any
+  default     = {}
+}
