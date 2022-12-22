@@ -28,12 +28,11 @@ module "custom_elasticache_alarms" {
   threshold           = lookup(each.value, "threshold", null)
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id #tolist(aws_elasticache_replication_group.elasticache.member_clusters)[0]
+    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id
   }
 
   alarm_actions = lookup(each.value, "alarm_actions", null)
   ok_actions = lookup(each.value, "ok_actions", null)
-  # TODO set this to alrm to resource
 
   tags = local.tags
 }
@@ -53,7 +52,7 @@ resource "aws_cloudwatch_metric_alarm" "redis_cpu_alarm" {
   ok_actions          = var.default_ok_actions
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id #tolist(aws_elasticache_replication_group.elasticache.member_clusters)[0]
+    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id
   }
   depends_on = [aws_elasticache_replication_group.elasticache]
 }
@@ -73,7 +72,7 @@ resource "aws_cloudwatch_metric_alarm" "redis_memory_alarm" {
   ok_actions          = var.default_ok_actions
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id #tolist(aws_elasticache_replication_group.elasticache.member_clusters)[0]
+    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id
   }
   depends_on = [aws_elasticache_replication_group.elasticache]
 }
