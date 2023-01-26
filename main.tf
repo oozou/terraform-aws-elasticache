@@ -39,9 +39,9 @@ resource "aws_elasticache_replication_group" "elasticache" {
   maintenance_window       = var.maintenance_window
 
   # Encryption
-  auth_token                 = var.auth_token
-  at_rest_encryption_enabled = true
-  transit_encryption_enabled = true
+  auth_token                 = var.is_enable_transit_encryption ? var.auth_token : null
+  at_rest_encryption_enabled = var.is_enable_at_rest_encryption
+  transit_encryption_enabled = var.is_enable_transit_encryption
 
   tags = merge({
     Name = "${local.service_name}-ec"

@@ -2,6 +2,15 @@
 
 All notable changes to this module will be documented in this file.
 
+## [v1.0.3] - 2023-01-26
+
+### Added
+
+- Add options to enable or disable encryptions (in-transit, at-rest)
+- Add following vars
+    - is_enable_at_rest_encryption
+    - is_enable_transit_encryption
+
 ## [v1.0.2] - 2022-12-22
 
 ### Added

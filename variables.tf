@@ -44,9 +44,22 @@ variable "redis_cluster_config" {
   })
 }
 
+variable "is_enable_at_rest_encryption" {
+  description = "Whether to enable at rest encryption"
+  type        = bool
+  default     = true
+}
+
+variable "is_enable_transit_encryption" {
+  description = "Whether to enable in transit encryption"
+  type        = bool
+  default     = true
+}
+
 variable "auth_token" {
   description = "Auth token for the Elasticache redis auth. Reference: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html"
   type        = string
+  default     = null
 }
 
 variable "snapshot_config" {
