@@ -23,9 +23,9 @@ resource "aws_elasticache_replication_group" "elasticache" {
   engine_version = var.redis_cluster_config.engine_version
 
   # Subnets, AZs & Security
-  subnet_group_name  = aws_elasticache_subnet_group.elasticache.name
-  availability_zones = data.aws_subnet.subnets.*.availability_zone
-  security_group_ids = [aws_security_group.elasticache.id]
+  subnet_group_name           = aws_elasticache_subnet_group.elasticache.name
+  preferred_cache_cluster_azs = data.aws_subnet.subnets.*.availability_zone
+  security_group_ids          = [aws_security_group.elasticache.id]
 
   # HA
   num_cache_clusters         = var.redis_cluster_config.node_count
