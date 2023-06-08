@@ -1,8 +1,8 @@
 module "custom_elasticache_alarms" {
   source  = "oozou/cloudwatch-alarm/aws"
-  version = "1.0.0"
+  version = "2.0.0"
 
-  for_each =  var.custom_elasticache_alarms_configure
+  for_each   = var.custom_elasticache_alarms_configure
   depends_on = [aws_elasticache_replication_group.elasticache]
 
   prefix      = var.prefix
@@ -32,13 +32,13 @@ module "custom_elasticache_alarms" {
   }
 
   alarm_actions = lookup(each.value, "alarm_actions", null)
-  ok_actions = lookup(each.value, "ok_actions", null)
+  ok_actions    = lookup(each.value, "ok_actions", null)
 
   tags = local.tags
 }
 
 resource "aws_cloudwatch_metric_alarm" "redis_cpu_alarm" {
-  count = var.is_enable_default_alarms ? 1 : 0
+  count               = var.is_enable_default_alarms ? 1 : 0
   alarm_name          = format("%s-%s-alarm", local.service_name, "redis_high_CPU")
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
@@ -58,7 +58,7 @@ resource "aws_cloudwatch_metric_alarm" "redis_cpu_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "redis_memory_alarm" {
-  count = var.is_enable_default_alarms ? 1 : 0
+  count               = var.is_enable_default_alarms ? 1 : 0
   alarm_name          = format("%s-%s-alarm", local.service_name, "redis_high_memory")
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
