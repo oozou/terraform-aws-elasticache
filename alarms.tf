@@ -1,6 +1,6 @@
 module "custom_elasticache_alarms" {
   source  = "oozou/cloudwatch-alarm/aws"
-  version = "2.0.0"
+  version = "2.0.1"
 
   for_each   = var.custom_elasticache_alarms_configure
   depends_on = [aws_elasticache_replication_group.elasticache]
