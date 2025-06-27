@@ -9,13 +9,13 @@ resource "aws_security_group" "elasticache" {
   }, local.tags)
 }
 
-# Security group rule for incoming redis connections
+# Security group rule for incoming redis/valkey connections
 resource "aws_security_group_rule" "ingress" {
   security_group_id = aws_security_group.elasticache.id
   description       = "Ingress rule for the elasticache cluster security group"
   type              = "ingress"
-  from_port         = var.redis_cluster_config.port
-  to_port           = var.redis_cluster_config.port
+  from_port         = local.cache_port
+  to_port           = local.cache_port
   protocol          = "tcp"
 
   source_security_group_id = aws_security_group.client.id
@@ -32,12 +32,12 @@ resource "aws_security_group" "client" {
   }, local.tags)
 }
 
-# Security group rule for outgoing redis connections
+# Security group rule for outgoing redis/valkey connections
 resource "aws_security_group_rule" "egress" {
   security_group_id = aws_security_group.client.id
   type              = "egress"
-  from_port         = var.redis_cluster_config.port
-  to_port           = var.redis_cluster_config.port
+  from_port         = local.cache_port
+  to_port           = local.cache_port
   protocol          = "tcp"
 
   source_security_group_id = aws_security_group.elasticache.id

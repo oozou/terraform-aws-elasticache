@@ -2,6 +2,17 @@
 
 All notable changes to this module will be documented in this file.
 
+## [v2.1.0] - 2025-06-27
+
+### Added
+
+- service
+    - aws_elasticache_serverless_cache.elasticache
+- varriables
+    - cache_type
+    - serverless_config
+    - serverless_security_group_ids
+
 ## [v2.0.1] - 2023-06-15
 
 ### Changed

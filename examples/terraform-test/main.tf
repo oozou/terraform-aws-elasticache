@@ -7,13 +7,13 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-# Traditional Redis cluster
+# Traditional Redis cluster for testing
 module "redis_traditional" {
   source = "../../"
 
   prefix      = var.prefix
   environment = var.environment
-  name        = "redis-trad"
+  name        = "redis-test"
 
   cache_type = "redis"
 
@@ -65,13 +65,13 @@ module "redis_traditional" {
   }
 }
 
-# Traditional Valkey cluster
+# Valkey traditional cluster for testing
 module "valkey_traditional" {
   source = "../../"
 
   prefix      = var.prefix
   environment = var.environment
-  name        = "valkey-trad"
+  name        = "valkey-test"
 
   cache_type = "valkey"
 
@@ -89,20 +89,25 @@ module "valkey_traditional" {
 
   auth_token = "TIdAao6sd6waZ6NpiC60RZ2nRqYf7C3b"
 
-  multi_az_enabled = false
+  multi_az_enabled = true
+
+  snapshot_config = {
+    snapshot_retention_limit = 2
+    snapshot_window          = "04:00-06:00"
+  }
 
   tags = var.custom_tags
 
   is_enable_default_alarms = true
 }
 
-# Redis Serverless
+# Redis Serverless for testing
 module "redis_serverless" {
   source = "../../"
 
   prefix      = var.prefix
   environment = var.environment
-  name        = "redis-serverless"
+  name        = "redis-sless"
 
   cache_type = "redis-serverless"
 
@@ -116,14 +121,14 @@ module "redis_serverless" {
     description    = "Redis serverless cache for testing"
     cache_usage_limits = {
       data_storage = {
-        maximum = 10
+        maximum = 5
         unit    = "GB"
       }
       ecpu_per_second = {
-        maximum = 5000
+        maximum = 2500
       }
     }
-    daily_snapshot_time      = "03:00"
+    daily_snapshot_time      = "03:30"
     snapshot_retention_limit = 1
   }
 
@@ -132,13 +137,13 @@ module "redis_serverless" {
   is_enable_default_alarms = true
 }
 
-# Valkey Serverless
+# Valkey Serverless for testing
 module "valkey_serverless" {
   source = "../../"
 
   prefix      = var.prefix
   environment = var.environment
-  name        = "valkey-serverless"
+  name        = "valkey-sless"
 
   cache_type = "valkey-serverless"
 
@@ -152,15 +157,15 @@ module "valkey_serverless" {
     description    = "Valkey serverless cache for testing"
     cache_usage_limits = {
       data_storage = {
-        maximum = 5
+        maximum = 3
         unit    = "GB"
       }
       ecpu_per_second = {
-        maximum = 2500
+        maximum = 1500
       }
     }
-    daily_snapshot_time      = "04:00"
-    snapshot_retention_limit = 2
+    daily_snapshot_time      = "04:30"
+    snapshot_retention_limit = 1
   }
 
   tags = var.custom_tags

@@ -2,8 +2,8 @@ module "custom_elasticache_alarms" {
   source  = "oozou/cloudwatch-alarm/aws"
   version = "2.0.1"
 
-  for_each   = var.custom_elasticache_alarms_configure
-  depends_on = [aws_elasticache_replication_group.elasticache]
+  for_each   = !local.is_serverless ? var.custom_elasticache_alarms_configure : {}
+  depends_on = [aws_elasticache_replication_group.elasticache[0]]
 
   prefix      = var.prefix
   environment = var.environment
@@ -28,7 +28,7 @@ module "custom_elasticache_alarms" {
   threshold           = lookup(each.value, "threshold", null)
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id
+    CacheClusterId = aws_elasticache_replication_group.elasticache[0].global_replication_group_id
   }
 
   alarm_actions = lookup(each.value, "alarm_actions", null)
@@ -38,7 +38,7 @@ module "custom_elasticache_alarms" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "redis_cpu_alarm" {
-  count               = var.is_enable_default_alarms ? 1 : 0
+  count               = var.is_enable_default_alarms && !local.is_serverless ? 1 : 0
   alarm_name          = format("%s-%s-alarm", local.service_name, "redis_high_CPU")
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
@@ -52,13 +52,13 @@ resource "aws_cloudwatch_metric_alarm" "redis_cpu_alarm" {
   ok_actions          = var.default_ok_actions
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id
+    CacheClusterId = aws_elasticache_replication_group.elasticache[0].global_replication_group_id
   }
-  depends_on = [aws_elasticache_replication_group.elasticache]
+  depends_on = [aws_elasticache_replication_group.elasticache[0]]
 }
 
 resource "aws_cloudwatch_metric_alarm" "redis_memory_alarm" {
-  count               = var.is_enable_default_alarms ? 1 : 0
+  count               = var.is_enable_default_alarms && !local.is_serverless ? 1 : 0
   alarm_name          = format("%s-%s-alarm", local.service_name, "redis_high_memory")
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = "1"
@@ -72,8 +72,8 @@ resource "aws_cloudwatch_metric_alarm" "redis_memory_alarm" {
   ok_actions          = var.default_ok_actions
 
   dimensions = {
-    CacheClusterId = aws_elasticache_replication_group.elasticache.global_replication_group_id
+    CacheClusterId = aws_elasticache_replication_group.elasticache[0].global_replication_group_id
   }
-  depends_on = [aws_elasticache_replication_group.elasticache]
+  depends_on = [aws_elasticache_replication_group.elasticache[0]]
 }
 
