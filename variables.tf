@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 variable "name" {
-  description = "Name of the ECS cluster to create"
+  description = "Name of the ElastiCache cluster to create"
   type        = string
 }
 
@@ -26,6 +26,17 @@ variable "tags" {
 /*                                 ElastiCache                                */
 /* -------------------------------------------------------------------------- */
 
+variable "cache_type" {
+  description = "Type of cache to create. Valid values: redis, valkey, redis-serverless, valkey-serverless"
+  type        = string
+  default     = "redis"
+
+  validation {
+    condition     = contains(["redis", "valkey", "redis-serverless", "valkey-serverless"], var.cache_type)
+    error_message = "Cache type must be one of: redis, valkey, redis-serverless, valkey-serverless."
+  }
+}
+
 variable "vpc_config" {
   description = "VPC ID and private subnets for ElastiCache cluster"
   type = object({
@@ -35,18 +46,44 @@ variable "vpc_config" {
 }
 
 variable "redis_cluster_config" {
-  description = "Configuration for redis cluster"
+  description = "Configuration for traditional redis/valkey cluster (not used for serverless)"
   type = object({
     port           = number
     instance_type  = string
     engine_version = string
     node_count     = number
   })
+  default = null
+}
+
+variable "serverless_config" {
+  description = "Configuration for serverless cache"
+  type = object({
+    engine_version       = string
+    major_engine_version = optional(string)
+    cache_usage_limits = optional(object({
+      data_storage = optional(object({
+        maximum = number
+        unit    = string
+      }))
+      ecpu_per_second = optional(object({
+        maximum = number
+      }))
+    }))
+    daily_snapshot_time      = optional(string)
+    description              = optional(string)
+    kms_key_id               = optional(string)
+    snapshot_arns_to_restore = optional(list(string))
+    snapshot_retention_limit = optional(number)
+    user_group_id            = optional(string)
+  })
+  default = null
 }
 
 variable "auth_token" {
-  description = "Auth token for the Elasticache redis auth. Reference: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html"
+  description = "Auth token for the Elasticache redis/valkey auth. Reference: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth.html"
   type        = string
+  default     = null
 }
 
 variable "snapshot_config" {
@@ -68,8 +105,9 @@ variable "maintenance_window" {
 }
 
 variable "multi_az_enabled" {
-  description = "Specifies whether to enable Multi-AZ Support for the replication group"
+  description = "Specifies whether to enable Multi-AZ Support for the replication group (traditional clusters only)"
   type        = bool
+  default     = false
 }
 
 variable "additional_cluster_security_group_ingress_rules" {
@@ -82,6 +120,12 @@ variable "additional_cluster_security_group_ingress_rules" {
     description              = string
   }))
   description = "Additional ingress rule for cluster security group."
+  default     = []
+}
+
+variable "serverless_security_group_ids" {
+  description = "List of security group IDs for serverless cache (required for serverless caches)"
+  type        = list(string)
   default     = []
 }
 
