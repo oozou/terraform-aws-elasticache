@@ -51,7 +51,7 @@ jobs:
       - name: Download job log
         run: |
           gh api /repos/${{ github.repository }}/actions/jobs/${{ steps.extract.outputs.job_id }}/logs > job-log.txt
-          grep -iE 'error|✗|failed|panic' job-log.txt || true > errors.txt
+          grep -iE 'error|✗|failed|panic' job-log.txt > errors.txt
           cat errors.txt
           echo "errors<<EOF" >> $GITHUB_OUTPUT
           cat errors.txt >> $GITHUB_OUTPUT
