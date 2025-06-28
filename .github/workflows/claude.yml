@@ -30,80 +30,47 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Install JSZip
-        run: npm install jszip
-
-      - name: Get job log and extract error
-        id: get-error-log
+      - name: Extract Job ID from comment
+        id: extract
         uses: actions/github-script@v7
         with:
           script: |
-            const runId = context.runId;
-            const pull_number = context.payload.pull_request?.number;
-
-            if (!pull_number) {
-              core.setFailed("No pull request number found.");
-              return;
-            }
-
-            // Get latest PR comments
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: pull_number,
-              per_page: 10,
-            });
-
-            const jobIdRegex = /Job ID: (\d+)/;
-            const latestComment = comments.reverse().find(c => jobIdRegex.test(c.body));
-            const match = latestComment?.body?.match(jobIdRegex);
-
+            const comment = context.payload.comment.body;
+            const match = comment.match(/Job ID:\s*(\d+)/);
             if (!match) {
-              core.setFailed("No job ID found in latest comment.");
-              return;
+              core.setFailed("No Job ID found in the comment.");
+            } else {
+              const jobId = match[1];
+              core.setOutput("job_id", jobId);
+              console.log(`Found Job ID: ${jobId}`);
             }
+          
+      - name: Install GH CLI
+        uses: dev-hanz-ops/install-gh-cli-action@v0.2.1
 
-            const jobId = match[1];
-            console.log(`Found Job ID: ${jobId}`);
-
-            // Get log archive URL
-            const { data: logZip } = await github.request(
-              `GET /repos/${context.repo.owner}/${context.repo.repo}/actions/jobs/${jobId}/logs`
-            );
-
-            const response = await fetch(logZip.url);
-            const buffer = await response.arrayBuffer();
-            const JSZip = require("jszip");
-            const zip = await JSZip.loadAsync(Buffer.from(buffer));
-
-            let errorLines = [];
-
-            for (const filename of Object.keys(zip.files)) {
-              const file = zip.files[filename];
-              if (!file.dir && filename.endsWith('.txt')) {
-                const content = await file.async('string');
-                const lines = content.split('\n');
-                for (const line of lines) {
-                  if (line.toLowerCase().includes('error') || line.includes('✗')) {
-                    errorLines.push(line.trim());
-                  }
-                }
-              }
-            }
-
-            const errors = errorLines.join('\n').slice(0, 10000); // Limit output to 10,000 chars
-            core.setOutput("errors", errors || "No errors found");
-          #env:
-          #  NODE_OPTIONS: "--no-experimental-fetch"
-
-      - name: Post captured errors
+      - name: Download job log
+        id: grep-errors
         run: |
-          echo "Captured errors:"
-          echo "${{ steps.get-error-log.outputs.errors }}"
+          gh api /repos/${{ github.repository }}/actions/jobs/${{ steps.extract.outputs.job_id }}/logs > job-log.txt
+          grep -iE 'error|✗|failed|panic' job-log.txt > errors.txt
+          cat errors.txt
+          echo "errors<<EOF" >> $GITHUB_OUTPUT
+          cat errors.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.CICD_GH_PAT }}
 
-      # - name: Run Claude PR Action
-      #   uses: anthropics/claude-code-action@beta
-      #   with:
-      #     anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-      #     timeout_minutes: "60"
-      #     model: "claude-opus-4-20250514"
+      - name: Output error logs
+        run: |
+          echo "----- ERROR LOGS -----"
+          echo "${{ steps.grep-errors.outputs.errors }}"
+
+      - name: Run Claude PR Action
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          timeout_minutes: "60"
+          model: "claude-opus-4-20250514"
+          direct_prompt: |
+            Please check the error ${{ steps.grep-errors.outputs.errors }}
+            and fix the issue in the code.
