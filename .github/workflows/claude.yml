@@ -49,6 +49,7 @@ jobs:
         uses: dev-hanz-ops/install-gh-cli-action@v0.2.1
 
       - name: Download job log
+        id: grep-errors
         run: |
           gh api /repos/${{ github.repository }}/actions/jobs/${{ steps.extract.outputs.job_id }}/logs > job-log.txt
           grep -iE 'error|✗|failed|panic' job-log.txt > errors.txt
@@ -64,9 +65,12 @@ jobs:
           echo "----- ERROR LOGS -----"
           echo "${{ steps.grep-errors.outputs.errors }}"
 
-      # - name: Run Claude PR Action
-      #   uses: anthropics/claude-code-action@beta
-      #   with:
-      #     anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-      #     timeout_minutes: "60"
-      #     model: "claude-opus-4-20250514"
+      - name: Run Claude PR Action
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          timeout_minutes: "60"
+          model: "claude-opus-4-20250514"
+          direct_prompt: |
+            Please check the error ${{ steps.grep-errors.outputs.errors }}
+            and fix the issue in the code.
