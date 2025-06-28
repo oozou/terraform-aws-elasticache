@@ -57,6 +57,12 @@ func TestTerraformAWSElastiCacheModule(t *testing.T) {
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
+
+		// Variables to pass to our Terraform code using -var options
+		Vars: map[string]interface{}{
+			"prefix":      "example",
+			"environment": "example",
+		},
 	})
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
