@@ -240,7 +240,7 @@ func testAlarmsCreated(t *testing.T, terraformOptions *terraform.Options, region
 	// Test alarms for Redis traditional cluster
 	if redisReplicationGroupId != "" {
 		input := &cloudwatch.DescribeAlarmsInput{
-			AlarmNamePrefix: aws.String(fmt.Sprintf("example-example-redis-test-redis_high_CPU")),
+			AlarmNamePrefix: aws.String("example-example-redis-test-redis_high_CPU"),
 		}
 
 		result, err := client.DescribeAlarms(context.TODO(), input)
@@ -262,7 +262,7 @@ func testAlarmsCreated(t *testing.T, terraformOptions *terraform.Options, region
 	// Test alarms for Valkey traditional cluster
 	if valkeyReplicationGroupId != "" {
 		input := &cloudwatch.DescribeAlarmsInput{
-			AlarmNamePrefix: aws.String(fmt.Sprintf("example-example-valkey-test-redis_high_CPU")),
+			AlarmNamePrefix: aws.String("example-example-valkey-test-redis_high_CPU"),
 		}
 
 		result, err := client.DescribeAlarms(context.TODO(), input)
