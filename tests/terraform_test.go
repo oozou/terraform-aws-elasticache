@@ -57,6 +57,12 @@ func TestTerraformAWSElastiCacheModule(t *testing.T) {
 		EnvVars: map[string]string{
 			"AWS_DEFAULT_REGION": awsRegion,
 		},
+
+		// Variables to pass to our Terraform code using -var options
+		Vars: map[string]interface{}{
+			"prefix":      "example",
+			"environment": "example",
+		},
 	})
 
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
@@ -182,6 +188,7 @@ func testElasticacheClustersCreated(t *testing.T, terraformOptions *terraform.Op
 		assert.Equal(t, "valkey", *rg.Engine, "Engine should be valkey")
 		assert.True(t, *rg.AtRestEncryptionEnabled, "At-rest encryption should be enabled")
 		assert.True(t, *rg.TransitEncryptionEnabled, "Transit encryption should be enabled")
+		// assert.Equal(t, "enabled", string(rg.MultiAZ), "Multi-AZ should be enabled for Valkey cluster")
 	}
 }
 
@@ -239,7 +246,7 @@ func testAlarmsCreated(t *testing.T, terraformOptions *terraform.Options, region
 	// Test alarms for Redis traditional cluster
 	if redisReplicationGroupId != "" {
 		input := &cloudwatch.DescribeAlarmsInput{
-			AlarmNamePrefix: aws.String(fmt.Sprintf("example-example-redis-test-redis_high_CPU")),
+			AlarmNamePrefix: aws.String("example-example-redis-test-redis_high_CPU"),
 		}
 
 		result, err := client.DescribeAlarms(context.TODO(), input)
@@ -261,7 +268,7 @@ func testAlarmsCreated(t *testing.T, terraformOptions *terraform.Options, region
 	// Test alarms for Valkey traditional cluster
 	if valkeyReplicationGroupId != "" {
 		input := &cloudwatch.DescribeAlarmsInput{
-			AlarmNamePrefix: aws.String(fmt.Sprintf("example-example-valkey-test-redis_high_CPU")),
+			AlarmNamePrefix: aws.String("example-example-valkey-test-redis_high_CPU"),
 		}
 
 		result, err := client.DescribeAlarms(context.TODO(), input)
