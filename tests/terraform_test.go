@@ -182,6 +182,7 @@ func testElasticacheClustersCreated(t *testing.T, terraformOptions *terraform.Op
 		assert.Equal(t, "valkey", *rg.Engine, "Engine should be valkey")
 		assert.True(t, *rg.AtRestEncryptionEnabled, "At-rest encryption should be enabled")
 		assert.True(t, *rg.TransitEncryptionEnabled, "Transit encryption should be enabled")
+		// assert.Equal(t, "enabled", string(rg.MultiAZ), "Multi-AZ should be enabled for Valkey cluster")
 	}
 }
 
