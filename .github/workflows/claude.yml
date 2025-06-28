@@ -50,22 +50,14 @@ jobs:
 
       - name: Download job log
         run: |
-          mkdir -p logs
-          gh run download --job ${{ steps.extract.outputs.job_id }} --log -D logs
-          unzip -o logs/*.zip -d logs
+          gh api /repos/${context.repo.owner}/${context.repo.repo}/actions/jobs/${{ steps.extract.outputs.job_id }}/logs > job-log.txt
+          grep -iE 'error|✗|failed|panic' job-log.txt || true > errors.txt
+          cat errors.txt
+          echo "errors<<EOF" >> $GITHUB_OUTPUT
+          cat errors.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.CICD_GH_PAT }}
-
-
-      - name: Extract error lines
-        id: grep-errors
-        run: |
-          mkdir -p logs-out
-          grep -iE 'error|✗|failed|panic' logs/**/*.txt || true > logs-out/errors.txt
-          cat logs-out/errors.txt
-          echo "errors<<EOF" >> $GITHUB_OUTPUT
-          cat logs-out/errors.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Output error logs
         run: |
