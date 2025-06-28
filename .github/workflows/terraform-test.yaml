@@ -64,7 +64,7 @@ jobs:
               return;
             }
 
-            const commentBody = `### ❌ Failed Jobs in Workflow Run #${run_id}\n${failedJobs}`;
+            const commentBody = `@claude ### ❌ Failed Jobs in Workflow Run #${run_id}\n${failedJobs}`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
