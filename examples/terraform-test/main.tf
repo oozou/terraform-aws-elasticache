@@ -84,7 +84,7 @@ module "valkey_traditional" {
     port           = 6379,
     instance_type  = "cache.t3.micro",
     engine_version = "7.2",
-    node_count     = 1
+    node_count     = 2
   }
 
   auth_token = "TIdAao6sd6waZ6NpiC60RZ2nRqYf7C3b"
